@@ -14,17 +14,17 @@ app.use(cors({
     origin: '*'
 }))
 
-const v1_bucket = require('./routes/v1/bucket')
-app.use("/v1",v1_bucket)
 
 app.get("/",(req,res)=>{
     console.log("welcome to coin api")
     res.status(200).send("welcome to coin api")
 })
 
+const v1_user = require('./routes/v1/users')
+app.use('/v1/users',v1_user)
 
 
-app.listen(process.env.PORT,'192.168.124.171',()=>{
+app.listen(process.env.PORT,()=>{
     console.log("started running app on port",process.env.PORT)
     mongo.set_connection()
 })
