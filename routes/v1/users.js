@@ -1,13 +1,13 @@
 
 const express = require("express");
 const { validateToken } = require("./middlewares/token");
-const { getCreatedBuckets, getOrders } = require("./middlewares/user");
+const { getCreatedBuckets, getOrders, addCurrentPrice } = require("./middlewares/user");
 var router = express.Router();
 
 
 router.get('/details',validateToken,)
 
-router.get('/orders',validateToken,getOrders,(req,res)=>{
+router.get('/orders',validateToken,getOrders,addCurrentPrice,(req,res)=>{
     res.status(200).json({
         "response_code":"200",
         "message":"successfully fetched",
