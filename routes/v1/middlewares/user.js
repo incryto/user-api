@@ -2,7 +2,6 @@ const purchase = require('../model/purchase')
 const bucket = require("../model/bucket");
 const { getCurrentPrice } = require('../controllers/bucket');
 
-function getUser(req, res, next) {}
 
 function getCreatedBuckets(req, res, next) {
   try {
@@ -48,6 +47,7 @@ async function addCurrentPrice(req,res,next){
         const coins_set = new Set(all_coin_list)
         all_coin_list =Array.from(coins_set)
         var coins_list = await getCurrentPrice(all_coin_list)
+        net_price = 0
         for(var i=0;i<orders.length;i++){
           var tot =0;
           for(var j =0;j<orders[i].bucket_id.coins.length;j++){
@@ -60,22 +60,44 @@ async function addCurrentPrice(req,res,next){
             }
             
           }
+          net_price+=tot
           orders[i].bucket_id["current_price"] = tot
           
         }
+        req.net_price = net_price
         req.orders = orders
 
         next()
     }catch(e){
-        res.status(200).json({
+      return   res.status(200).json({
             response_code: 500,
             message: "Internal Server Error",
             response: null,
           });
     }
 }
+const user = require('./../model/user')
+function getUserDetails(req,res,next) {
+    try{  
+      user.findOne({
+        _id:req.user_id
+      }).then((user_fetched)=>{
+        req.user_details = user_fetched;
+        next()
+      }).catch((e)=>{
+        throw e;
+      })
+    }catch(e){
+      return  res.status(200).json({
+        response_code: 500,
+        message: "Internal Server Error",
+        response: null,
+      });
+    }
+}
 module.exports = {
   getCreatedBuckets,
   getOrders,
-  addCurrentPrice
+  addCurrentPrice,
+  getUserDetails
 };
